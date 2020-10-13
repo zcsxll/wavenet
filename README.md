@@ -1,2 +1,1 @@
-# wavenet
-A Pytorch implementation of DeepMind's WaveNet paper
+# A Pytorch implementation of DeepMind's WaveNet paper

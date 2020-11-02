@@ -4,7 +4,7 @@ import model as m
 import save_load as sl
 
 def train(n_epoch):
-    dataset = d.Dataset(3070, 16)
+    dataset = d.Dataset(3070, 160)
     dataloader = torch.utils.data.DataLoader(dataset=dataset,
                                             batch_size=4,
                                             shuffle=True)
@@ -36,7 +36,9 @@ def train(n_epoch):
             optim.zero_grad()
             loss.backward()
             optim.step()
-        sl.save_checkpoint('./checkpoint', epoch, model, optim)
+        if epoch % 100 == 0:
+            sl.save_checkpoint('./checkpoint', epoch, model, optim)
+    sl.save_checkpoint('./checkpoint', epoch, model, optim)
 
 if __name__ == '__main__':
-    train(100)
+    train(10000)

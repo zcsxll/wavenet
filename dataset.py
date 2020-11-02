@@ -6,7 +6,7 @@ import torch
 
 def mu_law_encode(audio):
     audio = audio / 32768.0
-    mu = 265 - 1
+    mu = 256 - 1
     safe_audio_abs = np.minimum(np.abs(audio), 1.0)
     magnitude = np.log1p(mu * safe_audio_abs) / np.log1p(mu)
     signal = np.sign(audio) * magnitude
@@ -37,6 +37,10 @@ class Dataset(torch.utils.data.Dataset):
         [2, 8]结果和9做loss
         因此下边定义one_hot的时候，长度是total_len-1
         '''
+        pcm = pcm[600*16:-3000*16] #掐头去尾，去除静音
+        pcm = self.auto_gain(pcm)
+        # print(type(pcm[0]))
+        # wavfile.write('./test.wav', 16000, pcm.astype(np.int16))
         assert pcm.shape[0] >= total_len
         max_start = pcm.shape[0] - total_len
         offset = random.randint(0, max_start)
@@ -57,6 +61,11 @@ class Dataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.waves)
 
+    def auto_gain(self, pcm):
+        max_point = np.max(np.abs(pcm))
+        factor = 30000 / max_point
+        return pcm * factor
+
 if __name__ == '__main__':
     dataset = Dataset(3000, 16)
     dataloader = torch.utils.data.DataLoader(dataset=dataset,
@@ -67,4 +76,4 @@ if __name__ == '__main__':
 
     for step, (batch_x, batch_y) in enumerate(dataloader):
         print(step, batch_x.shape, batch_y.shape)
-        # break
+        break

@@ -94,6 +94,10 @@ class WaveNet(torch.nn.Module):
         # print(n, c, l, skip.shape)
         return skip
 
+    def total_parameters(self):
+        total = sum([p.numel() for p in self.parameters()])
+        print(total * 4 / 1024, "KB")
+
 if __name__ == '__main__':
     import dataset
 
@@ -107,4 +111,6 @@ if __name__ == '__main__':
     for step, (batch_x, batch_y) in enumerate(dataloader):
         pred = model(batch_x)
         print(step, batch_x.shape, batch_y.shape, pred.shape)
-        # break
+        break
+
+    model.total_parameters()
